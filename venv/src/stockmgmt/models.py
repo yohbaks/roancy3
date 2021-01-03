@@ -12,6 +12,8 @@ category_choice = (
 issue_to_category = (
 		('Cogon', 'Cogon'),
 		('Kanangga', 'kanangga'),
+		('Albuera', 'Albuera'),
+		('Maasin', 'Maasin')
 
 )
 #mao ni sya ang pag crate category model na name , sa frontend pag add og category
