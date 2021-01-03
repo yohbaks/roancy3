@@ -29,5 +29,6 @@ urlpatterns = [
     path('reorder_level/<str:pk>/', views.reorder_level, name="reorder_level"),
     path('stock_detail/<str:pk>/', views.stock_detail, name="stock_detail"),
     path('cogon_items/', views.cogon_items, name='cogon_items'),
-    path('accounts/', include('registration.backends.default.urls'))
+    path('accounts/', include('registration.backends.default.urls')),
+    path('store/<slug:slug>',views.store,name='store'),
 ]

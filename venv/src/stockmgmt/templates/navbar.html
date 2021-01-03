@@ -15,10 +15,13 @@
             <li class="nav-item">
         <a class="nav-link" href="/add_items">Add Items</a>
       </li>
+
         </li>
+        {% for shop in stores %}
             <li class="nav-item">
-        <a class="nav-link" href="/cogon_items">Cogon Store</a>
+        <a class="nav-link" href="{{ shop.get_absolute_url }}">{{ shop.name }} Store</a>
       </li>
+        {% endfor %}
       <li class="nav-item">
         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
       </li>

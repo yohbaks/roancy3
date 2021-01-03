@@ -12,11 +12,22 @@ from django.contrib.auth.decorators import login_required
 # home view ni sya bai
 def home(request):
     title = 'Welcome to Roancy Application'
+    all_store = All_Store.objects.all()
+
     context = {
-        "title": title
+        "title": title,
+        'stores':all_store,
     }
     return render(request, "home.html", context)
 
+def store(request,slug):
+    store=All_Store.objects.get(slug=slug)
+    this_store_items=store.products.all()
+    context={
+        'products':this_store_items,
+    }
+    template='cogon.html'
+    return render(request,template,context)
 
 # views sa pag search, please refer to the forms "StockSearchForm"
 @login_required

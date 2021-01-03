@@ -1,5 +1,7 @@
 from django.contrib import admin
 from .forms import StockCreateForm
+from .models import All_Store
+
 # Register your models here.
 
 from .models import *
@@ -16,3 +18,4 @@ class StockCreateAdmin(admin.ModelAdmin):
 
 admin.site.register(Stock, StockCreateAdmin)
 admin.site.register(Category)
+admin.site.register(All_Store)

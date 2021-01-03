@@ -5,7 +5,7 @@ from .models import Stock
 class StockCreateForm(forms.ModelForm):
    class Meta:
      model = Stock
-     fields = ['category', 'item_name', 'quantity']
+     fields = ['category', 'item_name', 'quantity', 'price']
 
 #validation ni siya sa mag duplicate (code ni siaya sa duplication og this field is required)
    def clean_category(self):
