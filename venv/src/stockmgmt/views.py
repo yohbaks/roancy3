@@ -5,9 +5,9 @@ from django.http import HttpResponse  # sa excel ni sya na import
 from django.contrib import messages  # sa notifacation ni siya
 import csv
 from django.contrib.auth.decorators import login_required
+
+
 @login_required
-
-
 # Create your views here.
 # home view ni sya bai
 def home(request):
@@ -16,18 +16,25 @@ def home(request):
 
     context = {
         "title": title,
-        'stores':all_store,
+        'stores': all_store,
     }
     return render(request, "home.html", context)
 
-def store(request,slug):
-    store=All_Store.objects.get(slug=slug)
-    this_store_items=store.products.all()
-    context={
-        'products':this_store_items,
+
+def store(request, slug):
+    store = All_Store.objects.get(slug=slug)
+    this_store_items = Stock.objects.filter(issue_to_model=store)
+    print(this_store_items)
+    store_record = Shop_Record.objects.filter(store=store)
+    context = {
+        'slug':slug,
+        'store': store,
+        'products': this_store_items,
+        'store_record': store_record,
     }
-    template='cogon.html'
-    return render(request,template,context)
+    template = 'cogon.html'
+    return render(request, template, context)
+
 
 # views sa pag search, please refer to the forms "StockSearchForm"
 @login_required
@@ -60,6 +67,7 @@ def list_items(request):
             "queryset": queryset,
         }
     return render(request, "list_items.html", context)
+
 
 # views sa pag add og item, please refer to the forms "StockCreateForm"
 @login_required
@@ -102,86 +110,171 @@ def delete_items(request, pk):
         return redirect('/list_items')
     return render(request, 'delete_items.html')
 
-#stock_detail ni siya
+
+# stock_detail ni siya
+def shop_stock_detail(request, pk):
+    queryset = Stock.objects.get(id=pk)
+
+    context = {
+        "queryset": queryset,
+
+    }
+    return render(request, "shop_stock_detail.html", context)
+
+
 def stock_detail(request, pk):
-	queryset = Stock.objects.get(id=pk)
-	context = {
-		"queryset": queryset,
-	}
-	return render(request, "stock_detail.html", context)
+    queryset = Stock.objects.get(id=pk)
+    context = {
+        "queryset": queryset,
+    }
+    return render(request, "stock_detail.html", context)
 
 
-
-#mao ni siya ang code sa view sa receive and issue item
+# mao ni siya ang code sa view sa receive and issue item
 
 def issue_items(request, pk):
-	queryset = Stock.objects.get(id=pk)
-	form = IssueForm(request.POST or None, instance=queryset)
-	if form.is_valid():
-		instance = form.save(commit=False)
-		instance.quantity -= instance.issue_quantity
-        #instance.cogon_quantity += instance.issue_quantity
-		instance.issue_by = str(request.user)
-		messages.success(request, "Issued SUCCESSFULLY. " + str(instance.quantity) + " " + str(instance.item_name) + "s now left in Bodega")
-		instance.save()
+    queryset = Stock.objects.get(id=pk)
+    form = IssueForm(request.POST or None, instance=queryset)
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.quantity -= instance.issue_quantity
+        # instance.cogon_quantity += instance.issue_quantity
+        instance.issue_by = str(request.user)
+        messages.success(request, "Issued SUCCESSFULLY. " + str(instance.quantity) + " " + str(
+            instance.item_name) + "s now left in Bodega")
+        instance.save()
 
-		return redirect('/stock_detail/'+str(instance.id))
-		# return HttpResponseRedirect(instance.get_absolute_url())
+        return redirect('/stock_detail/' + str(instance.id))
+    # return HttpResponseRedirect(instance.get_absolute_url())
 
-	context = {
-		"title": 'Issue ' + str(queryset.item_name),
-		"queryset": queryset,
-		"form": form,
-		"username": 'Issue By: ' + str(request.user),
-	}
-	return render(request, "add_items.html", context)
+    context = {
+        "title": 'Issue ' + str(queryset.item_name),
+        "queryset": queryset,
+        "form": form,
+        "username": 'Issue By: ' + str(request.user),
+    }
+    return render(request, "sell_items.html", context)
 
+
+def sell_items(request, pk):
+    queryset = Stock.objects.get(id=pk)
+
+    form = ReceiveForm(request.POST or None, instance=queryset)
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.quantity -= instance.receive_quantity
+
+        print(instance.quantity)
+        print(instance.receive_quantity)
+        print(instance)
+
+        queryset.save()
+        messages.success(request, "Sold SUCCESSFULLY. " + str(instance.quantity) + " " + str(
+            instance.item_name) + "s now in Store")
+        try:
+            sold_items=Sold_Items.objects.get(store=queryset.issue_to_model,product=queryset)
+
+            sold_items.product = queryset
+            sold_items.store = queryset.issue_to_model
+            sold_items.quantity += instance.receive_quantity
+            sold_items.save()
+        except:
+            sold_items = Sold_Items()
+            sold_items.product = queryset
+            sold_items.store = queryset.issue_to_model
+            sold_items.quantity = instance.receive_quantity
+            sold_items.save()
+
+        return redirect('/shop_stock_detail/' + str(instance.id))
+    # return HttpResponseRedirect(instance.get_absolute_url())
+    context = {
+
+        "title": 'Sell ' + str(queryset.item_name) + ' Items',
+        "instance": queryset,
+        "form": form,
+        "username": 'Sell By: ' + str(request.user),
+    }
+    return render(request, "add_items.html", context)
 
 
 def receive_items(request, pk):
-	queryset = Stock.objects.get(id=pk)
-	form = ReceiveForm(request.POST or None, instance=queryset)
-	if form.is_valid():
-		instance = form.save(commit=False)
-		instance.quantity += instance.receive_quantity
-		instance.save()
-		messages.success(request, "Received SUCCESSFULLY. " + str(instance.quantity) + " " + str(instance.item_name)+"s now in Store")
+    queryset = Stock.objects.get(id=pk)
+    form = ReceiveForm(request.POST or None, instance=queryset)
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.quantity += instance.receive_quantity
+        instance.save()
+        messages.success(request, "Received SUCCESSFULLY. " + str(instance.quantity) + " " + str(
+            instance.item_name) + "s now in Store")
 
-		return redirect('/stock_detail/'+str(instance.id))
-		# return HttpResponseRedirect(instance.get_absolute_url())
-	context = {
-			"title": 'Receive ' + str(queryset.item_name) + ' to the Bodega',
-			"instance": queryset,
-			"form": form,
-			"username": 'Receive By: ' + str(request.user),
-		}
-	return render(request, "add_items.html", context)
+        return redirect('/stock_detail/' + str(instance.id))
+    # return HttpResponseRedirect(instance.get_absolute_url())
+    context = {
+        "title": 'Receive ' + str(queryset.item_name) + ' to the Bodega',
+        "instance": queryset,
+        "form": form,
+        "username": 'Receive By: ' + str(request.user),
+    }
+    return render(request, "add_items.html", context)
 
-#reorder level views
+
+# reorder level views
 def reorder_level(request, pk):
-	queryset = Stock.objects.get(id=pk)
-	form = ReorderLevelForm(request.POST or None, instance=queryset)
-	if form.is_valid():
-		instance = form.save(commit=False)
-		instance.save()
-		messages.success(request, "Reorder level for " + str(instance.item_name) + " is updated to " + str(instance.reorder_level))
+    queryset = Stock.objects.get(id=pk)
+    form = ReorderLevelForm(request.POST or None, instance=queryset)
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.save()
+        messages.success(request, "Reorder level for " + str(instance.item_name) + " is updated to " + str(
+            instance.reorder_level))
 
-		return redirect("/list_items")
-	context = {
-			"instance": queryset,
-			"form": form,
-		}
-	return render(request, "add_items.html", context)
+        return redirect("/list_items")
+    context = {
+        "instance": queryset,
+        "form": form,
+    }
+    return render(request, "add_items.html", context)
+
 
 def cogon_items(request):
-	title = 'List of Items'
-	queryset = Stock.objects.filter(issue_to__icontains='Cogon')
-	context = {
-		"title": title,
-		"queryset": queryset,
-	}
-	return render(request, "cogon_items.html", context)
+    title = 'List of Items'
+    queryset = Stock.objects.filter(issue_to__icontains='Cogon')
+    context = {
+        "title": title,
+        "queryset": queryset,
+    }
+    return render(request, "cogon_items.html", context)
 
-    #    queryset = Stock.objects.filter(  # category__icontains=form['category'].value(),
-    #        issue_to__icontains='Cogon'
-    #    )
+#    queryset = Stock.objects.filter(  # category__icontains=form['category'].value(),
+#        issue_to__icontains='Cogon'
+#    )
+
+def daily_sales(request,pk,store_id):
+    queryset=Stock.objects.filter(pk=pk)
+    sales_record=Sold_Items.objects.filter(store__pk=store_id)
+    context={
+        'queryset':queryset,
+        'sales_record':sales_record,
+    }
+    template='daily_sales.html'
+    return render(request,template,context)
+
+def search_view(request,slug):
+    term=request.GET.get('search')
+    all_items=Stock.objects.filter(item_name__icontains=term,issue_to_model__slug=slug)
+    context={
+        'products':all_items,
+        'slug': slug,
+    }
+    return render(request,'cogon.html',context)
+
+def all_daily_sales(request):
+
+    sales_record = Sold_Items.objects.all()
+    print(sales_record)
+    context = {
+
+        'sales_record': sales_record,
+    }
+    template = 'all_sales.html'
+    return render(request, template, context)

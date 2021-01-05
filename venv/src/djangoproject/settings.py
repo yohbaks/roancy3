@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -129,3 +129,5 @@ ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window
 REGISTRATION_AUTO_LOGIN = True # Automatically log the user in.
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
+USE_TZ=True
+TIME_ZONE='Asia/Manila'

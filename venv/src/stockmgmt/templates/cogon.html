@@ -54,10 +54,11 @@
             {% endif %}
 
   <div class="jumbotron">
+
       <div class="header"> {{header}}</div>
 
-    	<form method='POST' action=''>{% csrf_token %}
-		{{form|crispy}}
+    	<form method='GET' action="{% url 'search' slug %}">
+		<input placeholder="Search" type="search" name="search">
         <input type="submit" value='Search'/>
     </form>
 
@@ -79,7 +80,7 @@
 
           </tr>
         </thead>
-      {% for instance in queryset %}
+      {% for instance in products %}
           <tr>
             <td>{{forloop.counter}}</td>
             <td>{{instance.category}}</td>
@@ -87,9 +88,22 @@
             <td>
                   {% if instance.quantity <= instance.reorder_level %}
                   <div style="background-color: orange;">
-                      <a href="{% url 'stock_detail' instance.id %}">{{instance.quantity}}</a></div>
+                      <a href="{% url 'shop_stock_detail' instance.id %}">
+
+                          {% for record in store_record %}
+                          {% if record.product.pk == instance.pk %}
+                          {{ record.remaining_items }}
+                          {% endif %}
+                          {% endfor %}</a></div>
                   {% else %}
-                <a href="{% url 'stock_detail' instance.id %}">{{instance.quantity}}</a>
+                <a href="{% url 'shop_stock_detail' instance.id %}">
+
+                          {% for record in store_record %}
+                          {% if record.product.pk == instance.pk %}
+                          {{ record.remaining_items }}
+                          {% endif %}
+                          {% endfor %}
+                </a>
                   {% endif %}
             </td>
             <td><a href="{% url 'reorder_level' instance.id %}">{{instance.reorder_level}}</a></td>
@@ -98,7 +112,7 @@
             <td><a href="{% url 'delete_items' instance.id %}"><img src="{% static 'img/dele2.png' %}"></a></td>
             <td>
 
-                <a href="{% url 'stock_detail' instance.id %}"><img src="{% static 'img/update.png' %}"></a>
+                <a href="{% url 'shop_stock_detail' instance.id %}"><img src="{% static 'img/update.png' %}"></a>
 
             </td>
           </tr>

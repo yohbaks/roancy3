@@ -5,7 +5,7 @@ from .models import All_Store
 # Register your models here.
 
 from .models import *
-
+'''
 class StockCreateAdmin(admin.ModelAdmin):
    list_display = ['category', 'item_name', 'quantity', 'issue_by']
    form = StockCreateForm
@@ -14,8 +14,12 @@ class StockCreateAdmin(admin.ModelAdmin):
    list_filter = ['category']
 
    #(this is for search)
-   search_fields = ['category', 'item_name']
+   search_fields = ['category', 'item_name']'''
 
-admin.site.register(Stock, StockCreateAdmin)
+#admin.site.register(Stock, StockCreateAdmin)
+admin.site.register(Stock)
 admin.site.register(Category)
+admin.site.register(Shop_Record)
 admin.site.register(All_Store)
+admin.site.register(Transit_Record)
+admin.site.register(Sold_Items)
