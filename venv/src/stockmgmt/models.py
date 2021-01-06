@@ -69,6 +69,7 @@ class Stock(models.Model):
     issue_by = models.CharField(max_length=50, blank=True, null=True, choices=issue_to_category)
     issue_by_model = models.ForeignKey(All_Store, on_delete=models.CASCADE, blank=True, null=True,
                                        related_name='issue_to_model')
+    ordered_items=models.IntegerField(blank=True, null=True,default=0)
     issue_to = models.CharField(max_length=50, blank=True, null=True, choices=issue_to_category)
     issue_to_model = models.ForeignKey(All_Store, on_delete=models.CASCADE, blank=True, null=True,
                                        related_name='issue_by_model')
@@ -92,29 +93,30 @@ class Stock(models.Model):
             issue_to_shop = All_Store.objects.get(name='BODEGA')
 
         self.issue_by_model = issue_by_shop
+
         self.issue_to_model = issue_to_shop
-        try:
-            transit_record = Transit_Record.objects.get(store=self.issue_to_model, product=self)
-            print('this is shop record', transit_record)
-            print(transit_record.remaining_items)
-            print(self.issue_quantity)
-            print(transit_record.store)
-            print(transit_record.product)
-            transit_record.remaining_items = transit_record.remaining_items + self.issue_quantity
-            transit_record.save()
-            super(Stock, self).save(*args, **kwargs)
 
 
-        except Exception:
-            logging.error(traceback.format_exc())
-            transit_record = Transit_Record()
+        super(Stock, self).save(*args, **kwargs)
 
-            transit_record.store = self.issue_to_model
-            transit_record.product = self
-            transit_record.remaining_items = self.issue_quantity
-            print(transit_record)
-            transit_record.save()
-            super(Stock, self).save(*args, **kwargs)
+@receiver(post_save, sender=Stock)
+def create_shop_record(sender, instance, created, **kwargs):
+    if created:
+        print(kwargs)
+        print(instance)
+        print(sender)
+        shop_record = Shop_Record()
+        shop_record.product=instance
+        shop_record.store = instance.issue_to_model
+        shop_record.remaining_items =0
+        shop_record.save()
+
+
+
+
+@receiver(signals.post_save, sender=Stock)
+def populate_slug(sender, instance, **kwargs):
+    pass
 
 
 class Transit_Record(models.Model):
@@ -131,9 +133,10 @@ class Shop_Record(models.Model):
     product = models.ForeignKey(Stock, blank=True, null=True, on_delete=models.CASCADE)
     remaining_items = models.IntegerField(default=0)
 
-    def __str__(self):
-        return str(self.remaining_items) + ' ' + self.product.item_name + ' in ' + self.store.name + ' remaining'
+    '''def __str__(self):
 
+        return str(self.remaining_items) + ' ' + self.product.item_name + ' in ' + self.store.name + ' remaining'
+'''
 
 class Sold_Items(models.Model):
     store = models.ForeignKey(All_Store, blank=True, null=True, on_delete=models.CASCADE)

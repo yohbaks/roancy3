@@ -114,9 +114,10 @@ def delete_items(request, pk):
 # stock_detail ni siya
 def shop_stock_detail(request, pk):
     queryset = Stock.objects.get(id=pk)
-
+    remainnig=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_to_model)
     context = {
         "queryset": queryset,
+        'remaining':remainnig,
 
     }
     return render(request, "shop_stock_detail.html", context)
@@ -124,8 +125,13 @@ def shop_stock_detail(request, pk):
 
 def stock_detail(request, pk):
     queryset = Stock.objects.get(id=pk)
+    print(queryset.issue_to_model)
+    remainnig=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_by_model).remaining_items
+
     context = {
         "queryset": queryset,
+        'remaining': remainnig,
+
     }
     return render(request, "stock_detail.html", context)
 
@@ -143,6 +149,20 @@ def issue_items(request, pk):
         messages.success(request, "Issued SUCCESSFULLY. " + str(instance.quantity) + " " + str(
             instance.item_name) + "s now left in Bodega")
         instance.save()
+        try:
+            shop_record=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_by_model)
+        except:
+            shop_record=Shop_Record()
+        shop_record.remaining_items-=instance.issue_quantity
+        shop_record.save()
+        try:
+            new_shop_record=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_to_model)
+        except:
+            new_shop_record=Shop_Record()
+        new_shop_record.store=queryset.issue_to_model
+        new_shop_record.product=queryset
+        new_shop_record.remaining_items=instance.issue_quantity
+        new_shop_record.save()
 
         return redirect('/stock_detail/' + str(instance.id))
     # return HttpResponseRedirect(instance.get_absolute_url())
@@ -203,7 +223,17 @@ def receive_items(request, pk):
     if form.is_valid():
         instance = form.save(commit=False)
         instance.quantity += instance.receive_quantity
+        try:
+            shop_record=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_to_model)
+        except:
+            shop_record=Shop_Record()
+
         instance.save()
+
+        shop_record.store = instance.issue_to_model
+        shop_record.product = queryset
+        shop_record.remaining_items += instance.receive_quantity
+        shop_record.save()
         messages.success(request, "Received SUCCESSFULLY. " + str(instance.quantity) + " " + str(
             instance.item_name) + "s now in Store")
 
