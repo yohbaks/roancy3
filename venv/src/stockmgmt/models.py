@@ -133,10 +133,10 @@ class Shop_Record(models.Model):
     product = models.ForeignKey(Stock, blank=True, null=True, on_delete=models.CASCADE)
     remaining_items = models.IntegerField(default=0)
 
-    '''def __str__(self):
+    def __str__(self):
 
         return str(self.remaining_items) + ' ' + self.product.item_name + ' in ' + self.store.name + ' remaining'
-'''
+
 
 class Sold_Items(models.Model):
     store = models.ForeignKey(All_Store, blank=True, null=True, on_delete=models.CASCADE)
@@ -150,11 +150,8 @@ class Sold_Items(models.Model):
         stock_item = Stock.objects.get(pk=self.product.pk)
         print(stock_item.issue_quantity)
 
-        stock_item.issue_quantity -= self.quantity
+        #stock_item.issue_quantity -= self.quantity
         print(stock_item.issue_quantity)
         stock_item.save()
 
-        shop_record=Shop_Record.objects.get(product__pk=self.product.pk,store__pk=self.store.pk)
-        shop_record.remaining_items-=self.quantity
-        shop_record.save()
         super(Sold_Items, self).save(*args, **kwargs)

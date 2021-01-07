@@ -114,7 +114,7 @@ def delete_items(request, pk):
 # stock_detail ni siya
 def shop_stock_detail(request, pk):
     queryset = Stock.objects.get(id=pk)
-    remainnig=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_to_model)
+    remainnig=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_to_model).remaining_items
     context = {
         "queryset": queryset,
         'remaining':remainnig,
@@ -182,13 +182,25 @@ def sell_items(request, pk):
     form = ReceiveForm(request.POST or None, instance=queryset)
     if form.is_valid():
         instance = form.save(commit=False)
-        instance.quantity -= instance.receive_quantity
+        #instance.quantity -= instance.receive_quantity
 
         print(instance.quantity)
         print(instance.receive_quantity)
         print(instance)
 
         queryset.save()
+
+        shop_record=Shop_Record.objects.get(product__pk=instance.pk,store=instance.issue_to_model)
+        old_quantity=shop_record.remaining_items
+        sold_items_quantity=instance.receive_quantity
+        new_quantity=old_quantity-sold_items_quantity
+        if new_quantity<0:
+            messages.success(request, "You sold more items than those available in the store. " )
+            return redirect('/shop_stock_detail/' + str(instance.id))
+        else:
+
+            shop_record.remaining_items-=instance.receive_quantity
+            shop_record.save()
         messages.success(request, "Sold SUCCESSFULLY. " + str(instance.quantity) + " " + str(
             instance.item_name) + "s now in Store")
         try:
@@ -215,7 +227,9 @@ def sell_items(request, pk):
         "username": 'Sell By: ' + str(request.user),
     }
     return render(request, "add_items.html", context)
-
+def sold_more_items():
+    template='excess.html'
+    return render(request,template)
 
 def receive_items(request, pk):
     queryset = Stock.objects.get(id=pk)
