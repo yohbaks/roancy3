@@ -55,30 +55,31 @@
 
   <div class="jumbotron">
       <div class="header"> {{header}}</div>
+          	<form method='POST' action=''>{% csrf_token %}
+		{{form|crispy}}
+        <input type="submit" value='Search'/>
+    </form>
+  <script>
+      $(function () {
+          $('#{{ form.date.id_for_label }}').datetimepicker({
+              format: 'DD/MM/YYYY',
+          })
+      })
+  </script>
 
         <br><br>
-        <div class="display_table">
-          <table class='table'>
-                  <tr>
-                    <th>ITEM NAME</th>
-                    <th>QUANTITY IN STORE</th>
-
-                      <th>STORE</th>
-                    <th>REORDER LEVEL</th>
-                  </tr>
-
-{% for product in sales_record %}
-                  <tr>
-                    <td>{{product.product.item_name}}</td>
-
-                    <td>{{ product.quantity }}</td>
-
-                      <td>{{ product.store.name}}</td>
-                    <td>{{product.product.reorder_level}}</td>
-                  </tr>
-              {% endfor %}
-          </table>
+      <div class="row">
+          {% for sale in date_sale %}
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h4 class="card-title">{{ sale.store.name }}</h4>
+                <h5 class="card-subtitle mb-2 text-muted">DAILY SALES: P{{ sale.daily_sales_total }}</h5>
+                <a href="{% url 'shop_sold_items' sale.store.slug %}" class="card-text">ITEMS SOLD: {{ sale.daily_quantity_total }} QUANTITY</a>
+            </div>
         </div>
+          {% endfor %}
+
+      </div>
 
   </div>
 </main>

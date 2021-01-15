@@ -18,18 +18,19 @@ import traceback
 
 # mao ni sya ang drop choice box na  mano mano
 category_choice = (
-    ('Furniture', 'Furniture'),
-    ('IT Equipment', 'IT Equipment'),
-    ('Phone', 'Phone'),
-    ('Electronics', 'Electronics')
+    ('SEEDS', 'SEEDS'),
+    ('Chemicals', 'Chemicals'),
+    ('Fertilizer', 'Fertilizer'),
+
 )
 issue_to_category = (
     ('Cogon', 'Cogon'),
     ('Kanangga', 'kanangga'),
-    ('Albuera', 'Albuera'),
     ('Maasin', 'Maasin'),
     ('BODEGA', 'BODEGA'),
-
+    ('HILONGOS','HILONGOS'),
+    ('ALANG-ALANG','ALANG-ALANG'),
+    ('BOHOL','BOHOL'),
 )
 
 
@@ -39,6 +40,13 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+class SubCategory(models.Model):
+    category=models.ForeignKey(Category,on_delete=models.CASCADE,related_name='stock_Categories')
+    name=models.CharField(max_length=100,db_index=True)
+    def __str__(self):
+        return self.name
+
 
 
 # the database tables is here
@@ -61,6 +69,7 @@ def populate_slug(sender, instance, **kwargs):
 
 class Stock(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True)
+    sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, blank=True,null=True,verbose_name='UNIT')
     item_name = models.CharField(max_length=50, blank=True, null=True)
     quantity = models.IntegerField(default='0', blank=True, null=True)
     receive_quantity = models.IntegerField(default='0', blank=True, null=True)
@@ -155,3 +164,19 @@ class Sold_Items(models.Model):
         stock_item.save()
 
         super(Sold_Items, self).save(*args, **kwargs)
+
+class Individual_Sold_Item(models.Model):
+    store = models.ForeignKey(All_Store, blank=True, null=True, on_delete=models.CASCADE)
+    product = models.ForeignKey(Stock, blank=True, null=True, on_delete=models.CASCADE)
+    quantity = models.IntegerField(blank=True, null=True)
+    date=models.DateField(auto_now_add=True,null=True,blank=True)
+    def __str__(self):
+        return self.store.name + ' ' + self.product.item_name
+
+class Date_Sale(models.Model):
+    date=models.DateField()
+    store = models.ForeignKey(All_Store, blank=True, null=True, on_delete=models.CASCADE)
+    daily_sales_total=models.FloatField()
+    daily_quantity_total=models.IntegerField()
+    def __str__(self):
+        return self.store.name+' '+str(self.date)

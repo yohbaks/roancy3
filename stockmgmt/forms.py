@@ -1,11 +1,24 @@
 from django import forms
-from .models import Stock
+from .models import Stock, SubCategory, Sold_Items, Date_Sale
+
 
 #add form ni siya
 class StockCreateForm(forms.ModelForm):
    class Meta:
      model = Stock
-     fields = ['category', 'item_name', 'ordered_items', 'price']
+     fields = ['category','sub_category', 'item_name', 'ordered_items', 'price']
+
+   def __init__(self,*args,**kwargs):
+       super(StockCreateForm, self).__init__(*args,**kwargs)
+       self.fields['sub_category'].queryset=SubCategory.objects.none()
+       if 'category' in self.data:
+           try:
+               category_id=int(self.data.get('category'))
+               self.fields['sub_category'].queryset=SubCategory.objects.filter(category__id=category_id).order_by('name')
+           except (ValueError, TypeError):
+               pass
+       elif self.instance.pk:
+           self.fields['sub_category'].queryset=self.instance.category_set.order_by('name')
 
 #validation ni siya sa mag duplicate (code ni siaya sa duplication og this field is required)
    def clean_category(self):
@@ -25,14 +38,28 @@ class StockCreateForm(forms.ModelForm):
            if instance.item_name == item_name:
               raise forms.ValidationError(str(item_name) + ' is already created')
        return item_name
-#dira ra kutob
 
-#search form ni siya
+#fklsjdlfl
 class StockSearchForm(forms.ModelForm):
     export_to_CSV = forms.BooleanField(required=False) # code ni siya sa pag export sa excel
     class Meta:
      model = Stock
      fields = ['category', 'item_name']
+
+class AllSaleSearchForm(forms.Form):
+
+    date = forms.DateField(
+        input_formats=['%Y-%m-%d'],
+        widget=forms.DateInput(attrs={
+            'type':'date',
+            'class':'form_input',
+            'data-target':'#datetimepicker'
+        })
+    )
+    class Meta:
+        model=Date_Sale
+        fields=['date']
+
 
 #update form ni siya
 class StockUpdateForm(forms.ModelForm):
@@ -43,15 +70,24 @@ class StockUpdateForm(forms.ModelForm):
 
 #form for issueform
 class IssueForm(forms.ModelForm):
-	class Meta:
-		model = Stock
-		fields = ['issue_quantity', 'issue_to']
+    def __init__(self,*args,**kwargs):
+        super(IssueForm, self).__init__(*args,**kwargs)
+        instance=getattr(self,'sub_category',None)
+        self.fields['sub_category'].disabled=True
+    class Meta:
+        model = Stock
+        fields = ['sub_category','issue_quantity', 'issue_to']
+
 
 #form for receive form
 class ReceiveForm(forms.ModelForm):
-	class Meta:
-		model = Stock
-		fields = ['receive_quantity']
+    def __init__(self,*args,**kwargs):
+        super(ReceiveForm, self).__init__(*args,**kwargs)
+        instance=getattr(self,'sub_category',None)
+        self.fields['sub_category'].disabled=True
+    class Meta:
+        model = Stock
+        fields = ['sub_category','receive_quantity']
 
 
 #form for reorder form

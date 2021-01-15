@@ -58,13 +58,13 @@
 
 
 <a href="{% url 'sell_items' queryset.id %}"><div class='btn btn-danger'>SELL ITEM</div></a>
-      <a href="{% url 'daily_sales' queryset.id queryset.issue_to_model.pk %}"><div class="btn btn-secondary">DAILY SALES</div> </a>
         <br><br>
         <div class="display_table">
           <table class='table'>
                   <tr>
                     <th>ITEM NAME</th>
                     <th>QUANTITY IN STORE</th>
+                      <th>UNIT</th>
                     <th>LAST UPDATED</th>
                     <th>REORDER LEVEL</th>
                   </tr>
@@ -73,6 +73,7 @@
                   <tr>
                     <td>{{queryset.item_name}}</td>
                     <td>{{remaining}}</td>
+                      <td>{{ queryset.sub_category.name }}</td>
                     <td>{{queryset.last_updated}}</td>
                     <td>{{queryset.reorder_level}}</td>
                   </tr>

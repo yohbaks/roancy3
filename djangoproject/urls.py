@@ -36,4 +36,7 @@ urlpatterns = [
     path('store/<slug:slug>',views.store,name='store'),
     path('search/<slug:slug>/',views.search_view,name='search'),
     path('all_sales/',views.all_daily_sales,name='all_sales'),
+    path('get_subcategories',views.get_subcategory,name='get_subcategory'),
+    path('ajax/load_sub_categories/',views.load_sub_caegories,name='ajax_load_sub_categories'),
+    path('shop_sold_items/<slug:slug>/',views.shop_sold_items,name='shop_sold_items'),
 ]

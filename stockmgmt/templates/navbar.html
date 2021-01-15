@@ -10,11 +10,8 @@
       </li>
         {% if request.user.is_authenticated %}
       <li class="nav-item">
-        <a class="nav-link" href="/list_items">List Items</a>
-      </li>
-            <li class="nav-item">
-        <a class="nav-link" href="/add_items">Add Items</a>
-      </li>
+        <a class="nav-link" href="/list_items">Bodega Products</a>
+
 
         </li>
         {% for shop in stores %}
@@ -22,6 +19,10 @@
         <a class="nav-link" href="{{ shop.get_absolute_url }}">{{ shop.name }} Store</a>
       </li>
         {% endfor %}
+             </li>
+            <li class="nav-item">
+        <a class="nav-link" href="/add_items">Add Items</a>
+      </li>
       <li class="nav-item">
         <a class="nav-link" href="{% url 'all_sales' %}" tabindex="-1" aria-disabled="true">ALL DAILY SALES</a>
       </li>

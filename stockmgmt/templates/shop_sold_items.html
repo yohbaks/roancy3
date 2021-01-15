@@ -1,4 +1,5 @@
 {% load static %}
+{% load crispy_forms_tags %}
 
 <!doctype html>
 <html lang="en">
@@ -11,24 +12,11 @@
     <title>Roancy Application</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.4/examples/navbar-fixed/">
-<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-<script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+
     <!-- Bootstrap core CSS -->
 <link href="{% static 'css/stylesheet.css' %}" rel="stylesheet">
 <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-  <!-- Bootstrap 4 -->
-    <script src="{% static 'js/slim.min.js' %}" ></script>
-    <script src="{% static 'js/poper.min.js' %}"></script>
 
-    <!-- Font Awesome -->
-    <link href="{% static 'css/font-awesome.min.css' %}">
-
-    <!-- Moment.js -->
-    <script src="{% static 'js/moment.min.js' %}"></script>
-
-    <!-- Tempus Dominus Bootstrap 4 -->
-    <link rel="stylesheet" href="{% static 'css/tempusdominus-bootstrap-4.min.css' %}"/>
-    <script src="{% static 'js/tempusdominus-bootstrap-4.min.js' %}"></script>
 
 
     <style>
@@ -51,32 +39,48 @@
 <link href="{% static 'css/navbar-top-fixed.css' %}" rel="stylesheet">
   </head>
   <body>
-{% include 'navbar.html' %}
+   {% include 'navbar.html' %}
+
+
+
 
 <main role="main" class="container">
+            {% if messages %}
+                  <ul class="success">
+                   {% for message in messages %}
+                   <h1>   <center>    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li> </center></h1>
+                   {% endfor %}
+                 </ul>
+            {% endif %}
+
   <div class="jumbotron">
-    <h1>{{title}}</h1>
+      <div class="header"> {{header}}</div>
 
-{% block title %}
-{% endblock %}
+        <br><br>
+        <div class="display_table">
+          <table class='table'>
+                  <tr>
+                    <th>ITEM NAME</th>
+                    <th>QUANTITY</th>
+                      <th>UNIT</th>
+                    <th>LAST UPDATED</th>
+                    <th>REORDER LEVEL</th>
+                  </tr>
+        {% for item in queryset %}
 
-{% block content %}
-{% endblock %}
+                  <tr>
+                    <td>{{item.product.item_name}}</td>
+                    <td>{{item.quantity}}</td>
+                      <td>{{ item.product.sub_category.name }}</td>
+                    <td>{{item.product.last_updated}}</td>
+                    <td>{{item.product.reorder_level}}</td>
+                  </tr>
+              {% endfor %}
+          </table>
+        </div>
+
   </div>
 </main>
-
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
       <script>window.jQuery || document.write('<script src="/docs/4.4/assets/js/vendor/jquery.slim.min.js"><\/script>')</script><script src="/docs/4.4/dist/js/bootstrap.bundle.min.js" integrity="sha384-6khuMg9gaYr5AxOqhkVIODVIvm9ynTT5J4V1cfthmT+emCG6yVmEZsRHdxlotUnm" crossorigin="anonymous"></script></body>
- <script>
-      $(function () {
-        $("#datetimepicker1").datetimepicker();
-      });
-    </script>
-<script>
-  $(function () {
-      setTimeout(function () {
-          $('.success').hide('bind',{},500)
-      },5000);
-  });
-</script>
-
 </html>

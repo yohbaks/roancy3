@@ -1,4 +1,4 @@
-{% load static %}
+ {% load static %}
 {% load crispy_forms_tags %}
 
 <!doctype html>
@@ -57,8 +57,8 @@
 
       <div class="header"> {{header}}</div>
 
-    	<form method='GET' action="{% url 'search' slug %}">
-		<input placeholder="Search" type="search" name="search">
+    	<form method='POST' action=''>{% csrf_token %}
+		{{form|crispy}}
         <input type="submit" value='Search'/>
     </form>
 
@@ -73,7 +73,7 @@
             <th>ITEM NAME</th>
             <th>QUANTITY IN STORE</th>
             <th>REORDER LEVEL</th>
-            <th>TIME STAMP</th>
+            <th>UNIT</th>
             <th>LAST UPDATED</th>
             <th>DELETE</th>
             <th>UPDATE</th>
@@ -107,7 +107,7 @@
                   {% endif %}
             </td>
             <td><a href="{% url 'reorder_level' instance.id %}">{{instance.reorder_level}}</a></td>
-            <td>{{instance.timestamp}}</td>
+            <td>{{instance.sub_category.name}}</td>
             <td>{{instance.last_updated}}</td>
             <td><a href="{% url 'delete_items' instance.id %}"><img src="{% static 'img/dele2.png' %}"></a></td>
             <td>
