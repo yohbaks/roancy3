@@ -8,9 +8,12 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Jekyll v3.8.6">
-    <title>Roancy Application</title>
+    <title>Roancy Application|{% block pagetitle %}
+
+    {% endblock %}</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.4/examples/navbar-fixed/">
+      <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
 <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
     <!-- Bootstrap core CSS -->
@@ -30,6 +33,7 @@
     <link rel="stylesheet" href="{% static 'css/tempusdominus-bootstrap-4.min.css' %}"/>
     <script src="{% static 'js/tempusdominus-bootstrap-4.min.js' %}"></script>
 
+  <script src="{% static 'js/index.js' %}"></script>
 
     <style>
       .bd-placeholder-img {
@@ -60,12 +64,17 @@
 {% block title %}
 {% endblock %}
 
-{% block content %}
+{% block body %}
 {% endblock %}
   </div>
 </main>
 
-      <script>window.jQuery || document.write('<script src="/docs/4.4/assets/js/vendor/jquery.slim.min.js"><\/script>')</script><script src="/docs/4.4/dist/js/bootstrap.bundle.min.js" integrity="sha384-6khuMg9gaYr5AxOqhkVIODVIvm9ynTT5J4V1cfthmT+emCG6yVmEZsRHdxlotUnm" crossorigin="anonymous"></script></body>
+      <script>window.jQuery || document.write('<script src="/docs/4.4/assets/js/vendor/jquery.slim.min.js"><\/script>')</script>
+<script src="/docs/4.4/dist/js/bootstrap.bundle.min.js" integrity="sha384-6khuMg9gaYr5AxOqhkVIODVIvm9ynTT5J4V1cfthmT+emCG6yVmEZsRHdxlotUnm" crossorigin="anonymous"></script>
+ {% block customejs %}
+
+ {% endblock %}
+  </body>
  <script>
       $(function () {
         $("#datetimepicker1").datetimepicker();

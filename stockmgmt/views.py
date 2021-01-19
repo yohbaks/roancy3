@@ -10,7 +10,7 @@ import pytz
 from datetime import datetime
 import logging
 import traceback
-
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 @login_required
 # Create your views here.
@@ -34,13 +34,21 @@ def store(request, slug):
     store_record = Shop_Record.objects.filter(store=store)
     all_store = All_Store.objects.all()
     header=store.name+' STOCKS'
+    page = request.GET.get('page', 1)
+    paginator = Paginator(this_store_items, 10)
+    try:
+        page_queryset = paginator.page(page)
+    except PageNotAnInteger:
+        page_queryset = paginator.page(1)
+    except EmptyPage:
+        page_queryset = paginator.page(paginator.num_pages)
     context = {
         'header':header,
         'slug':slug,
         'form':form,
         'store': store,
         'stores':all_store,
-        'products': this_store_items,
+        'products': page_queryset,
         'store_record': store_record,
     }
     if request.method == 'POST':
@@ -75,9 +83,17 @@ def list_items(request):
     form = StockSearchForm(request.POST or None)
     queryset = Stock.objects.all()
     all_store = All_Store.objects.all()
+    page = request.GET.get('page', 1)
+    paginator = Paginator(queryset, 10)
+    try:
+        page_queryset = paginator.page(page)
+    except PageNotAnInteger:
+        page_queryset = paginator.page(1)
+    except EmptyPage:
+        page_queryset = paginator.page(paginator.num_pages)
     context = {
         "header": header,
-        "queryset": queryset,
+        "queryset": page_queryset,
         'stores':all_store,
         "form": form,
     }
@@ -100,7 +116,7 @@ def list_items(request):
         context = {
             "form": form,
             "header": header,
-            "queryset": queryset,
+            "queryset": page_queryset,
         }
     return render(request, "list_items.html", context)
 
@@ -208,7 +224,7 @@ def issue_items(request, pk):
             new_shop_record=Shop_Record()
         new_shop_record.store=queryset.issue_to_model
         new_shop_record.product=queryset
-        new_shop_record.remaining_items=instance.issue_quantity
+        new_shop_record.remaining_items+=instance.issue_quantity
         new_shop_record.save()
 
         return redirect('/stock_detail/' + str(instance.id))

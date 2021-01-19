@@ -78,7 +78,7 @@ class Stock(models.Model):
     issue_by = models.CharField(max_length=50, blank=True, null=True, choices=issue_to_category)
     issue_by_model = models.ForeignKey(All_Store, on_delete=models.CASCADE, blank=True, null=True,
                                        related_name='issue_to_model')
-    ordered_items=models.IntegerField(blank=True, null=True,default=0)
+    ordered_items=models.IntegerField(blank=True, null=True,default=0,verbose_name='reorder')
     issue_to = models.CharField(max_length=50, blank=True, null=True, choices=issue_to_category)
     issue_to_model = models.ForeignKey(All_Store, on_delete=models.CASCADE, blank=True, null=True,
                                        related_name='issue_by_model')
