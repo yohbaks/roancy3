@@ -39,4 +39,5 @@ urlpatterns = [
     path('get_subcategories',views.get_subcategory,name='get_subcategory'),
     path('ajax/load_sub_categories/',views.load_sub_caegories,name='ajax_load_sub_categories'),
     path('shop_sold_items/<slug:slug>/',views.shop_sold_items,name='shop_sold_items'),
+    path('shop_reoder_level/<slug:slug>/<str:pk>',views.shop_reoder_level,name='shop_reoder_level'),
 ]

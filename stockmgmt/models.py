@@ -141,6 +141,7 @@ class Shop_Record(models.Model):
     store = models.ForeignKey(All_Store, blank=True, null=True, on_delete=models.CASCADE)
     product = models.ForeignKey(Stock, blank=True, null=True, on_delete=models.CASCADE)
     remaining_items = models.IntegerField(default=0)
+    reoder_level=models.IntegerField(default=0,verbose_name='Reorder level')
 
     def __str__(self):
 

@@ -6,16 +6,13 @@
 
 <main role="main" class="container">
             {% if messages %}
-                <div class="alert alert-dismissible fade in">
                   <ul class="success">
-                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                   {% for message in messages %}
-                                         <a href="#" id="thisclosebutton" class="close" data-dismiss="alert" aria-label="close" style="margin-left: 20px; margin-right: 10px">&times;</a>
+                                    <a href="#" id="thisclosebutton" class="close" data-dismiss="alert" aria-label="close" style="margin-left: 20px; margin-right: 10px">&times;</a>
 
+                   {% for message in messages %}
                    <h1>   <center>    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li> </center></h1>
                    {% endfor %}
                  </ul>
-                </div>
             {% endif %}
 
   <div class="jumbotron">
@@ -40,7 +37,7 @@
                     <td>{{remaining}}</td>
                       <td>{{ queryset.sub_category.name }}</td>
                     <td>{{queryset.last_updated}}</td>
-                    <td>{{queryset.reorder_level}}</td>
+                    <td><a href="{% url 'shop_reoder_level' shop_record.store.slug queryset.pk %}">{{reoder_level}}</a></td>
                   </tr>
           </table>
         </div>

@@ -173,11 +173,15 @@ def delete_items(request, pk):
 def shop_stock_detail(request, pk):
     queryset = Stock.objects.get(id=pk)
     remainnig=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_to_model).remaining_items
+    reoder_level=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_to_model).reoder_level
+    shop_record=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_to_model)
     all_store = All_Store.objects.all()
     context = {
         "queryset": queryset,
         'remaining':remainnig,
         'stores':all_store,
+        'shop_record':shop_record,
+        'reoder_level':reoder_level,
     }
     return render(request, "shop_stock_detail.html", context)
 
@@ -362,6 +366,27 @@ def reorder_level(request, pk):
             instance.reorder_level))
 
         return redirect("/list_items")
+    all_store = All_Store.objects.all()
+    context = {
+        'stores':all_store,
+        "instance": queryset,
+        "form": form,
+    }
+    return render(request, "add_items.html", context)
+
+
+def shop_reoder_level(request,slug,pk):
+
+    queryset=Shop_Record.objects.get(store__slug=slug,product__id=pk)
+    form = ShopReoderLevelForm(request.POST or None, instance=queryset)
+    if form.is_valid():
+        instance = form.save(commit=False)
+
+        instance.save()
+        messages.success(request, "Reorder level for " + str(instance.product.item_name) + " is updated to " + str(
+            instance.reoder_level))
+
+        return redirect("/shop_stock_detail/"+str(instance.product.pk))
     all_store = All_Store.objects.all()
     context = {
         'stores':all_store,

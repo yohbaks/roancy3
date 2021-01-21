@@ -1,5 +1,5 @@
 from django import forms
-from .models import Stock, SubCategory, Sold_Items, Date_Sale
+from .models import Stock, SubCategory, Sold_Items, Date_Sale, Shop_Record
 
 
 #add form ni siya
@@ -95,4 +95,10 @@ class ReorderLevelForm(forms.ModelForm):
 	class Meta:
 		model = Stock
 		fields = ['reorder_level']
+
+
+class ShopReoderLevelForm(forms.ModelForm):
+    class Meta:
+        model=Shop_Record
+        fields=['reoder_level']
 
