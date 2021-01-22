@@ -117,7 +117,7 @@ def create_shop_record(sender, instance, created, **kwargs):
         shop_record = Shop_Record()
         shop_record.product=instance
         shop_record.store = instance.issue_to_model
-        shop_record.remaining_items =0
+        shop_record.remaining_items =instance.issue_quantity
         shop_record.save()
 
 

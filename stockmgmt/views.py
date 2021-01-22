@@ -189,7 +189,10 @@ def shop_stock_detail(request, pk):
 def stock_detail(request, pk):
     queryset = Stock.objects.get(id=pk)
     print(queryset.issue_to_model)
-    remainnig=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_by_model).remaining_items
+    try:
+        remainnig=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_by_model).remaining_items
+    except:
+        remainnig=queryset.quantity
     all_store = All_Store.objects.all()
     context = {
         "queryset": queryset,
@@ -216,16 +219,10 @@ def issue_items(request, pk):
             instance.item_name) + "s now left in Bodega")
 
         instance.save()
-        try:
-            shop_record=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_by_model)
-        except:
-            shop_record=Shop_Record()
-        shop_record.remaining_items-=instance.issue_quantity
-        shop_record.save()
-        try:
-            new_shop_record=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_to_model)
-        except:
-            new_shop_record=Shop_Record()
+
+        print(queryset,queryset.issue_to_model)
+        new_shop_record=Shop_Record.objects.get(product=queryset,store=queryset.issue_to_model)
+
         new_shop_record.store=queryset.issue_to_model
         new_shop_record.product=queryset
         new_shop_record.remaining_items+=instance.issue_quantity
@@ -329,7 +326,7 @@ def receive_items(request, pk):
         instance = form.save(commit=False)
         instance.quantity += instance.receive_quantity
         try:
-            shop_record=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_to_model)
+            shop_record=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_by_model)
         except:
             shop_record=Shop_Record()
 
