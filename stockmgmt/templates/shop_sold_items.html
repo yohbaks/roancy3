@@ -24,6 +24,7 @@
                   <tr>
                     <th>ITEM NAME</th>
                     <th>QUANTITY</th>
+                      <th>PRICE</th>
                       <th>UNIT</th>
                     <th>LAST UPDATED</th>
                     <th>REORDER LEVEL</th>
@@ -33,6 +34,7 @@
                   <tr>
                     <td>{{item.product.item_name}}</td>
                     <td>{{item.quantity}}</td>
+                      <td>{{ item.product.price }}</td>
                       <td>{{ item.product.sub_category.name }}</td>
                     <td>{{item.product.last_updated}}</td>
                     <td>{{item.product.reorder_level}}</td>

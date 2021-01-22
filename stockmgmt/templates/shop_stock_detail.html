@@ -26,6 +26,7 @@
                   <tr>
                     <th>ITEM NAME</th>
                     <th>QUANTITY IN STORE</th>
+                      <th>PRICE</th>
                       <th>UNIT</th>
                     <th>LAST UPDATED</th>
                     <th>REORDER LEVEL</th>
@@ -34,7 +35,14 @@
 
                   <tr>
                     <td>{{queryset.item_name}}</td>
-                    <td>{{remaining}}</td>
+                    <td>
+                                     {% if remaining <= reoder_level %}
+                  <div style="background-color: orange;">
+                      <a href="{% url 'shop_stock_detail' queryset.id %}">{{remaining}}</a></div>
+                  {% else %}
+                <a href="{% url 'shop_stock_detail' queryset.id %}">{{remaining}}</a>
+                                     {% endif %}</td>
+                  <td>{{ queryset.price }}</td>
                       <td>{{ queryset.sub_category.name }}</td>
                     <td>{{queryset.last_updated}}</td>
                     <td><a href="{% url 'shop_reoder_level' shop_record.store.slug queryset.pk %}">{{reoder_level}}</a></td>
