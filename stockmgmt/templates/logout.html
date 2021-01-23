@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block pagetitle %}
+Logout
+{% endblock %}
+{% block body %}
+
+    <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <h1>You have successfully been logged out. To use the site you have to <a href="{% url 'login' %}">login.</a></h1>
+    </form>
+{% endblock %}

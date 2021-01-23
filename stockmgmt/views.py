@@ -11,6 +11,9 @@ from datetime import datetime
 import logging
 import traceback
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.contrib.auth import login,authenticate
+from django.contrib.auth.forms import UserCreationForm
+
 
 @login_required
 # Create your views here.
@@ -172,6 +175,7 @@ def delete_items(request, pk):
 # stock_detail ni siya
 def shop_stock_detail(request, pk):
     queryset = Stock.objects.get(id=pk)
+    print(queryset.issue_to_model)
     remainnig=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_to_model).remaining_items
     reoder_level=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_to_model).reoder_level
     shop_record=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_to_model)
@@ -204,6 +208,19 @@ def stock_detail(request, pk):
 
 # mao ni siya ang code sa view sa receive and issue item
 
+def signup(request):
+    if request.method=='POST':
+        form=SignUpForm(request.POST)
+        if form.is_valid():
+            user=form.save()
+
+
+            login(request,user,backend='django.contrib.auth.backends.ModelBackend')
+            return redirect('home')
+    else:
+        form=SignUpForm()
+    return render(request,'signup.html',{'form':form})
+
 def issue_items(request, pk):
     queryset = Stock.objects.get(id=pk)
     form = IssueForm(request.POST or None, instance=queryset)
@@ -221,7 +238,17 @@ def issue_items(request, pk):
         instance.save()
 
         print(queryset,queryset.issue_to_model)
-        new_shop_record=Shop_Record.objects.get(product=queryset,store=queryset.issue_to_model)
+
+        shop_record=Shop_Record.objects.get(product=queryset,store=queryset.issue_by_model)
+
+        shop_record.store = queryset.issue_by_model
+        shop_record.product = queryset
+        shop_record.remaining_items -= instance.issue_quantity
+        shop_record.save()
+        try:
+            new_shop_record=Shop_Record.objects.get(product=queryset,store=queryset.issue_to_model)
+        except:
+            new_shop_record=Shop_Record()
 
         new_shop_record.store=queryset.issue_to_model
         new_shop_record.product=queryset
@@ -325,10 +352,9 @@ def receive_items(request, pk):
     if form.is_valid():
         instance = form.save(commit=False)
         instance.quantity += instance.receive_quantity
-        try:
-            shop_record=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_by_model)
-        except:
-            shop_record=Shop_Record()
+
+        shop_record=Shop_Record.objects.get(product__pk=pk,store=queryset.issue_by_model)
+
 
         instance.save()
 

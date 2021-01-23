@@ -114,7 +114,10 @@ def create_shop_record(sender, instance, created, **kwargs):
         print(kwargs)
         print(instance)
         print(sender)
-        shop_record = Shop_Record()
+        try:
+            shop_record=Shop_Record().objects.get(product=instance,store=instance.issue_to_model)
+        except:
+            shop_record = Shop_Record()
         shop_record.product=instance
         shop_record.store = instance.issue_to_model
         shop_record.remaining_items =instance.issue_quantity
@@ -154,7 +157,7 @@ class Sold_Items(models.Model):
     quantity = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
-        return self.store.name + ' ' + self.product.item_name
+        return self.store.name + ' ' + self.product.item_name+' '+str(self.quantity)
 
     def save(self, *args, **kwargs):
         stock_item = Stock.objects.get(pk=self.product.pk)
@@ -172,7 +175,7 @@ class Individual_Sold_Item(models.Model):
     quantity = models.IntegerField(blank=True, null=True)
     date=models.DateField(auto_now_add=True,null=True,blank=True)
     def __str__(self):
-        return self.store.name + ' ' + self.product.item_name
+        return self.store.name + ' ' + self.product.item_name+' '+str(self.quantity)
 
 class Date_Sale(models.Model):
     date=models.DateField()

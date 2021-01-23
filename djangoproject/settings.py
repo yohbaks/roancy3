@@ -127,6 +127,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 #part ni sa code sa registration and login
 ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window
 REGISTRATION_AUTO_LOGIN = True # Automatically log the user in.
+LOGIN_URL='accounts/login'
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
 USE_TZ=True

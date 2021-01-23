@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from stockmgmt import views
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,7 +33,10 @@ urlpatterns = [
     path('shop_stock_detail/<str:pk>/', views.shop_stock_detail, name="shop_stock_detail"),
     path('daily_sales/<str:pk>/<str:store_id>/',views.daily_sales,name='daily_sales'),
     path('cogon_items/', views.cogon_items, name='cogon_items'),
-    path('accounts/', include('registration.backends.default.urls')),
+    path('accounts/login/', auth_views.LoginView.as_view(template_name='login.html'),name='login'),
+    path('accounts/logout/', auth_views.LogoutView.as_view(template_name='logout.html'),name='logout'),
+    path('accounts/signup', views.signup,name='signup'),
+
     path('store/<slug:slug>',views.store,name='store'),
     path('search/<slug:slug>/',views.search_view,name='search'),
     path('all_sales/',views.all_daily_sales,name='all_sales'),
