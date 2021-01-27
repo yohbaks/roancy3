@@ -27,7 +27,7 @@
                       <th>PRICE</th>
                       <th>UNIT</th>
                     <th>LAST UPDATED</th>
-                    <th>REORDER LEVEL</th>
+
                   </tr>
         {% for item in queryset %}
 
@@ -37,7 +37,7 @@
                       <td>{{ item.product.price }}</td>
                       <td>{{ item.product.sub_category.name }}</td>
                     <td>{{item.product.last_updated}}</td>
-                    <td>{{item.product.reorder_level}}</td>
+
                   </tr>
               {% endfor %}
           </table>

@@ -101,11 +101,21 @@ def list_items(request):
         "form": form,
     }
     if request.method == 'POST':  # code ni siya if the search box is click
+        print(form['category'])
+        print(form['item_name'])
 
         queryset = Stock.objects.filter(  category__pk=form['category'].value(),
             item_name__icontains=form['item_name'].value()
         )
         print(queryset)
+        page = request.GET.get('page', 1)
+        paginator = Paginator(queryset, 10)
+        try:
+            page_queryset = paginator.page(page)
+        except PageNotAnInteger:
+            page_queryset = paginator.page(1)
+        except EmptyPage:
+            page_queryset = paginator.page(paginator.num_pages)
         if form['export_to_CSV'].value() == True:  # code ni siya if the select box excel is selected
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="List of stock.csv"'
@@ -230,7 +240,7 @@ def issue_items(request, pk):
         # instance.cogon_quantity += instance.issue_quantity
         instance.issue_by = str(request.user)
         if instance.quantity < 0:
-            messages.success(request, "You sold more items than those available in the store. ")
+            messages.success(request, "You cannot assign more items than that available in the store. ")
             return redirect('/stock_detail/' + str(instance.id))
         messages.success(request, "Issued SUCCESSFULLY. " + str(instance.quantity) + " " + str(
             instance.item_name) + "s now left in Bodega")
@@ -316,7 +326,7 @@ def sell_items(request, pk):
             shop_record.remaining_items-=instance.receive_quantity
             shop_record.save()
         messages.success(request, "Sold SUCCESSFULLY. " + str(shop_record.remaining_items) + " " + str(
-            instance.item_name) + "s now in Store")
+            instance.item_name) + " now in Store")
         try:
             sold_items=Sold_Items.objects.get(store=queryset.issue_to_model,product=queryset)
 

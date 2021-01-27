@@ -72,7 +72,7 @@ class Stock(models.Model):
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, blank=True,null=True,verbose_name='UNIT')
     item_name = models.CharField(max_length=50, blank=True, null=True)
     quantity = models.IntegerField(default='0', blank=True, null=True)
-    receive_quantity = models.IntegerField(default='0', blank=True, null=True)
+    receive_quantity = models.IntegerField(default='0', blank=True, null=True,verbose_name='Quantity')
     receive_by = models.CharField(max_length=50, blank=True, null=True)
     issue_quantity = models.IntegerField(default='0', blank=True, null=True)
     issue_by = models.CharField(max_length=50, blank=True, null=True, choices=issue_to_category)

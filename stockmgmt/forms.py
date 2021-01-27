@@ -17,7 +17,7 @@ class SignUpForm(UserCreationForm):
 class StockCreateForm(forms.ModelForm):
    class Meta:
      model = Stock
-     fields = ['category','sub_category', 'item_name', 'ordered_items', 'price']
+     fields = ['category','sub_category', 'item_name', 'price']
 
    def __init__(self,*args,**kwargs):
        super(StockCreateForm, self).__init__(*args,**kwargs)
