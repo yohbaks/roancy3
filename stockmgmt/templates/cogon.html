@@ -48,7 +48,7 @@
             <td><a href="{% url 'update_items' instance.id %}">{{instance.item_name}}</a></td>
             <td>
                   {% if instance.quantity <= instance.reorder_level %}
-                  <div style="background-color: orange;">
+                  <div>
                       <a href="{% url 'shop_stock_detail' instance.id %}">
 
                           {% for record in store_record %}

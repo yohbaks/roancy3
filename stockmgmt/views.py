@@ -368,8 +368,6 @@ def receive_items(request, pk):
 
         instance.save()
 
-        shop_record.store = instance.issue_to_model
-        shop_record.product = queryset
         shop_record.remaining_items += instance.receive_quantity
         shop_record.save()
         messages.success(request, "Received SUCCESSFULLY. " + str(instance.quantity) + " " + str(

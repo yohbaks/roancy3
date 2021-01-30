@@ -36,7 +36,7 @@
                   <tr>
                     <td>{{queryset.item_name}}</td>
                     <td>
-                                     {% if remaining <= reoder_level %}
+                                     {% if remaining < reoder_level %}
                   <div style="background-color: orange;">
                       <a href="{% url 'shop_stock_detail' queryset.id %}">{{remaining}}</a></div>
                   {% else %}
