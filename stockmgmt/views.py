@@ -295,7 +295,7 @@ def sell_items(request, pk):
         individual_sale.store=instance.issue_to_model
         individual_sale.product=instance
         individual_sale.quantity=instance.receive_quantity
-        individual_sale.save()
+
 
         date_today = pytz.timezone('Asia/Manila')
         today_date = datetime.now(tz=date_today).date()
@@ -304,7 +304,7 @@ def sell_items(request, pk):
             date_sale=Date_Sale.objects.get(date=today_date,store=instance.issue_to_model)
             date_sale.daily_sales_total+=instance.receive_quantity*instance.price
             date_sale.daily_quantity_total+=instance.receive_quantity
-            date_sale.save()
+
         except:
             logging.error(traceback.format_exc())
             date_sale=Date_Sale()
@@ -312,7 +312,7 @@ def sell_items(request, pk):
             date_sale.store=instance.issue_to_model
             date_sale.daily_sales_total=instance.receive_quantity*instance.price
             date_sale.daily_quantity_total=instance.receive_quantity
-            date_sale.save()
+
 
         shop_record=Shop_Record.objects.get(product__pk=instance.pk,store=instance.issue_to_model)
         old_quantity=shop_record.remaining_items
@@ -322,7 +322,8 @@ def sell_items(request, pk):
             messages.success(request, "You sold more items than those available in the store. " )
             return redirect('/shop_stock_detail/' + str(instance.id))
         else:
-
+            date_sale.save()
+            individual_sale.save()
             shop_record.remaining_items-=instance.receive_quantity
             shop_record.save()
         messages.success(request, "Sold SUCCESSFULLY. " + str(shop_record.remaining_items) + " " + str(
